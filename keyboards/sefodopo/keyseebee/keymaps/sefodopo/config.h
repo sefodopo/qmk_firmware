@@ -21,10 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 // #define QUICK_TAP_TERM 0
-// #define TAPPING_TERM 100
+#define TAPPING_TERM 500
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY
 // #define PERMISSIVE_HOLD_PER_KEY
+// #define ONESHOT_TAP_TOGGLE 0
 
+#define TAPPING_TOGGLE 2
 #define OLED_BRIGHTNESS 10
 #define OLED_FADE_OUT
 #define OLED_FADE_OUT_INTERVAL 10

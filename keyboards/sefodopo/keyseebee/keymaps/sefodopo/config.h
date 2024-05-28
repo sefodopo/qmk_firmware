@@ -30,3 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define OLED_BRIGHTNESS 10
 #define OLED_FADE_OUT
 #define OLED_FADE_OUT_INTERVAL 10
+
+#define WPM_ALLOW_COUNT_REGRESSION
+#define WPM_LAUNCH_CONTROL
+#define SPLIT_WPM_ENABLE

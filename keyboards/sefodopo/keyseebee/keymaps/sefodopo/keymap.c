@@ -195,3 +195,57 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [7] = {ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
 };
 #endif
+
+#ifdef OLED_ENABLE
+bool oled_task_user(void) {
+    // Host Keyboard Layer Status
+    switch (get_highest_layer(layer_state)) {
+        case GALLIUM_LAYER:
+            oled_write_P(PSTR("Galli\n"), false);
+            break;
+        case COLEMAK_LAYER:
+            oled_write_P(PSTR("Colem\n"), false);
+            break;
+        case GAME_LAYER:
+            oled_write_P(PSTR("Game \n"), false);
+            break;
+        case GAME_LAYER+1:
+            oled_write_P(PSTR("Game#\n"), false);
+            break;
+        case STICKY_LAYER:
+            oled_write_P(PSTR("Stick\n"), false);
+            break;
+        case NUM_LAYER:
+            oled_write_P(PSTR("Numbr\n"), false);
+            break;
+        case SYM_LAYER:
+            oled_write_P(PSTR("Symbl\n"), false);
+            break;
+        case MEDIA_LAYER:
+            oled_write_P(PSTR("Media\n"), false);
+            break;
+        default:
+            oled_write_P(PSTR("Undef\n"), false);
+    }
+
+    char wpm_str[6];
+    sprintf(wpm_str, "%i\n", get_current_wpm());
+    oled_write(wpm_str, false);
+
+    led_t led_state = host_keyboard_led_state();
+    if (led_state.num_lock)
+        oled_write_P(PSTR("\nNUM\n"), false);
+    if (led_state.caps_lock)
+        oled_write_P(PSTR("\nCAP\n"), false);
+    if (led_state.scroll_lock)
+        oled_write_P(PSTR("\nNUM\n"), false);
+
+    if (is_keyboard_master()) {
+        oled_write_P(PSTR("\nMASTR"), false);
+    } else {
+        oled_write_P(PSTR("\nSLAVE"), false);
+    }
+
+    return false;
+}
+#endif

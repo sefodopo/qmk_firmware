@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 // #define QUICK_TAP_TERM 0
-#define TAPPING_TERM 500
+#define TAPPING_TERM 300
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY
-// #define PERMISSIVE_HOLD_PER_KEY
+#define PERMISSIVE_HOLD_PER_KEY
 // #define ONESHOT_TAP_TOGGLE 0
 
 #define TAPPING_TOGGLE 2
@@ -34,3 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define WPM_ALLOW_COUNT_REGRESSION
 #define WPM_LAUNCH_CONTROL
 #define SPLIT_WPM_ENABLE
+
+// #define LEADER_NO_TIMEOUT
+#define LEADER_TIMEOUT 1000

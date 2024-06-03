@@ -22,23 +22,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define GALLIUM_LAYER 0
 #define COLEMAK_LAYER 1
-#define GAME_LAYER 2
+#define GAME_LAYER 2 // This is actually two layers
 #define STICKY_LAYER 4
 #define NUM_LAYER 5
 #define SYM_LAYER 6
 #define MEDIA_LAYER 7
+
+extern uint8_t leader_sequence_size;
+extern uint16_t leader_sequence[5];
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [COLEMAK_LAYER] = LAYOUT_split_3x6_5(
 //,,-------------------------------------------------------------.                    ,-----------------------------------------------------.
     LT(STICKY_LAYER, KC_ESC), KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-    LT(MEDIA_LAYER, KC_TAB), KC_A, KC_R, ALT_T(KC_S), CTL_T(KC_T), KC_G, KC_M, RCTL_T(KC_N), RALT_T(KC_E), KC_I, KC_O, KC_QUOT,
+    LT(MEDIA_LAYER, KC_TAB), KC_A, KC_R, KC_S, KC_T, KC_G, KC_M, KC_N, KC_E, KC_I, KC_O, KC_QUOT,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
     KC_LGUI, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_MUTE, KC_MPLY, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, KC_DEL,
     //|--------+--------+--------+------------+------------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
 
-    KC_BSPC, LT(NUM_LAYER, KC_BSPC), SFT_T(KC_SPC), LT(SYM_LAYER, KC_ENT), LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
+    KC_BSPC, LT(NUM_LAYER, QK_AREP), SFT_T(QK_REP), LT(SYM_LAYER, QK_LEAD), LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
     //`--------------------------'  `--------------------------'
     ),
 
@@ -46,12 +49,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //,-------------------------------------------------------------.                    ,-----------------------------------------------------.
     LT(STICKY_LAYER, KC_ESC), KC_B, KC_L, KC_D, KC_C, KC_V, KC_J, KC_F, KC_O, KC_U, KC_SCLN, KC_BSLS,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-    LT(MEDIA_LAYER, KC_TAB), KC_N, KC_R, ALT_T(KC_T), CTL_T(KC_S), KC_G, KC_Y, RCTL_T(KC_H), RALT_T(KC_A), KC_E, KC_I, KC_QUOT,
+    LT(MEDIA_LAYER, KC_TAB), KC_N, KC_R, KC_T, KC_S, KC_G, KC_Y, KC_H, KC_A, KC_E, KC_I, KC_QUOT,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
     KC_LGUI, KC_X, KC_Q, KC_M, KC_W, KC_Z, KC_MUTE, KC_MPLY, KC_K, KC_P, KC_COMM, KC_DOT, KC_SLSH, KC_DEL,
     //|--------+--------+--------+------------+------------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
 
-    KC_BSPC, LT(NUM_LAYER, KC_BSPC), SFT_T(KC_SPC), LT(SYM_LAYER, KC_ENT), LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
+    KC_BSPC, LT(NUM_LAYER, QK_AREP), SFT_T(QK_REP), LT(SYM_LAYER, QK_LEAD), LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
     //`--------------------------'  `--------------------------'
     ),
 
@@ -133,17 +136,101 @@ TT(GAME_LAYER+1), KC_LCTL,  KC_SPC, KC_LALT, _______, _______, _______, _______
     ),
 };
 
+static uint16_t    next_keycode;
+static keyrecord_t next_record;
+
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (leader_sequence_active() &&
+            record->event.pressed &&
+            (leader_sequence_size > 1 ||
+             (leader_sequence_one_key(KC_S) && keycode != KC_T) ||
+            (leader_sequence_one_key(KC_H) && keycode != KC_A) ||
+            leader_sequence_one_key(KC_T) ||
+            leader_sequence_one_key(KC_A) ||
+            (leader_sequence_size == 0 && keycode != KC_T && keycode != KC_S && keycode != KC_H && keycode != KC_A))) {
+        //uprintf("Ending leader: %d\n", keycode);
+        leader_end();
+        return true;
+    }
+    switch(keycode) {
+        case LT(NUM_LAYER, QK_AREP):
+            if (record->tap.count) {
+                // Handle tap press and release events
+                if(process_last_key(QK_AREP, record)) {
+                    process_repeat_key(QK_AREP, record);
+                }
+                return false;
+            }
+            break;
+        case LT(SYM_LAYER, QK_LEAD):
+            if (record->tap.count && record->event.pressed) {
+                leader_start();
+                return false;
+            }
+            break;
+        case SFT_T(QK_REP):
+            if (record->tap.count) {
+                process_repeat_key(QK_REP, record);
+                return false;
+            }
+            break;
+    }
+    return true; // perform default code
+}
+
+bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *remembered_mods) {
+    switch (keycode) {
+        case LT(NUM_LAYER, QK_AREP):
+        case SFT_T(QK_REP):
+        case LT(SYM_LAYER, QK_LEAD):
+            return false;
+    }
+    return true;
+}
+
+void leader_end_user(void) {
+    switch (leader_sequence[0]) {
+        case KC_T:
+        case KC_A:
+            set_oneshot_mods(MOD_BIT(KC_LALT));
+            set_last_mods(MOD_BIT(KC_LALT));
+            break;
+        case KC_S:
+        case KC_H:
+            switch (leader_sequence[1]) {
+                case KC_T:
+                case KC_A:
+                    set_oneshot_mods(MOD_BIT(KC_LALT) | MOD_BIT(KC_LCTL));
+                    set_last_mods(MOD_BIT(KC_LALT) | MOD_BIT(KC_LCTL));
+                    break;
+                default:
+                    set_oneshot_mods(MOD_BIT(KC_LCTL));
+                    set_last_mods(MOD_BIT(KC_LCTL));
+            }
+            break;
+    }
+//    if (leader_sequence_one_key(KC_S) || leader_sequence_one_key(KC_H)) {
+//        set_oneshot_mods(MOD_BIT(KC_LCTL));
+//    } else if (leader_sequence_one_key(KC_T) || leader_sequence_one_key(KC_A)) {
+//        set_oneshot_mods(MOD_BIT(KC_LALT));
+//    } else if (leader_sequence_two_keys(KC_S, KC_T) || leader_sequence_two_keys(KC_H, KC_A)) {
+//        set_oneshot_mods(MOD_BIT(KC_LCTL) | MOD_BIT(KC_LALT));
+//    }
+}
+
 // BELOW IS TAKEN FROM https://github.com/filterpaper/qmk_userspace?tab=readme-ov-file#instant-tap
 // Matches rows on a 3x5_2 split keyboard
 #define IS_HOMEROW(r) (r->event.key.row == 1 || r->event.key.row == 5)
 
 #define IS_BILATERAL(r, n) ((r->event.key.row == 1 && 4 <= n.event.key.row && n.event.key.row <= 6) || (r->event.key.row == 5 && 0 <= n.event.key.row && n.event.key.row <= 2))
+#define IS_UNILATERAL(r, n) ( \
+        (r->event.key.row == 1 && 0 <= n.event.key.row && n.event.key.row <= 2) || \
+        (r->event.key.row == 5 && 4 <= n.event.key.row && n.event.key.row <= 6) )
 
-static uint16_t    next_keycode;
-static keyrecord_t next_record;
-
+#ifdef HOLD_ON_OTHER_KEY_PRESS_PER_KEY
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
-    return !IS_HOMEROW(record); // || IS_BILATERAL(record, next_record);
+    // return !IS_HOMEROW(record); // || IS_BILATERAL(record, next_record);
     //     switch (keycode) {
     //         case LT(NUM_LAYER, KC_BSPC):
     //         case LT(SYM_LAYER, KC_ENT):
@@ -153,33 +240,52 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     //         default:
     //             return IS_BILATERAL(record, next_record);
     //     }
+    if (IS_UNILATERAL(record, next_record)) {
+        // Set the tap keycode and send the pressed event
+        record->keycode = QK_MOD_TAP_GET_TAP_KEYCODE(keycode);
+        process_record(record);
+        // Release the tap keycode and send the event
+        record->event.pressed = false;
+        process_record(record);
+    }
+    return record->event.key.row == 3 || record->event.key.row == 7;
 }
+#endif
+
+#ifdef PERMISSIVE_HOLD_PER_KEY
+bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
+    return IS_BILATERAL(record, next_record);
+}
+#endif
 
 // BELOW IS TAKEN FROM https://github.com/filterpaper/qmk_userspace?tab=readme-ov-file#instant-tap
 #define INPUT_INTERVAL TAPPING_TERM / 2
 #define IS_TYPING(kc) (last_input_activity_elapsed() < INPUT_INTERVAL && KC_A <= (uint8_t)kc && (uint8_t)kc <= KC_SLSH && !IS_QK_LAYER_TAP(kc))
 
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
-    static uint16_t prev_keycode;
-    static bool     is_pressed[UINT8_MAX];
+    //static uint16_t prev_keycode;
+    //static keyrecord_t prev_record;
+    //static bool     is_pressed[UINT8_MAX];
 
     if (record->event.pressed) {
-        prev_keycode = next_keycode;
+        //prev_keycode = next_keycode;
+        //prev_record = next_record;
 
         next_keycode = keycode;
         next_record  = *record;
     }
 
-    if (IS_HOMEROW(record) && IS_QK_MOD_TAP(keycode)) {
-        uint8_t const tap_keycode = QK_MOD_TAP_GET_TAP_KEYCODE(keycode);
-        if (record->event.pressed && IS_TYPING(prev_keycode)) {
-            record->keycode         = tap_keycode;
-            is_pressed[tap_keycode] = true;
-        } else if (!record->event.pressed && is_pressed[tap_keycode]) {
-            record->keycode         = tap_keycode;
-            is_pressed[tap_keycode] = false;
-        }
-    }
+
+    // if (IS_HOMEROW(record) && IS_QK_MOD_TAP(keycode)) {
+    //     uint8_t const tap_keycode = QK_MOD_TAP_GET_TAP_KEYCODE(keycode);
+    //     if (record->event.pressed && IS_TYPING(prev_keycode)) {
+    //         record->keycode         = tap_keycode;
+    //         is_pressed[tap_keycode] = true;
+    //     } else if (!record->event.pressed && is_pressed[tap_keycode]) {
+    //         record->keycode         = tap_keycode;
+    //         is_pressed[tap_keycode] = false;
+    //     }
+    // }
     return true;
 }
 
@@ -201,7 +307,7 @@ bool oled_task_user(void) {
     // Host Keyboard Layer Status
     switch (get_highest_layer(layer_state)) {
         case GALLIUM_LAYER:
-            oled_write_P(PSTR("Galli\n"), false);
+            oled_write_P(PSTR("Ga v2\n"), false);
             break;
         case COLEMAK_LAYER:
             oled_write_P(PSTR("Colem\n"), false);

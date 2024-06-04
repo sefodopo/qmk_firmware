@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // clang-format off
 
+#include "repeat_key.h"
 #include QMK_KEYBOARD_H
 
 #define GALLIUM_LAYER 0
@@ -113,13 +114,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Game Layer
 [GAME_LAYER] = LAYOUT_split_3x6_5(
     //,-------------------------------------------------------------.                    ,-----------------------------------------------------.
-         KC_ESC, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-         KC_TAB, _______, _______,    KC_T,    KC_S, _______,                                  _______, KC_H, KC_A, _______, _______, _______,
-    //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-        KC_LSFT, _______, _______, _______, _______, _______, TO(0), _______, _______, _______, _______, _______, _______, _______,
-    //|--------+--------+--------+------------+------------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-TT(GAME_LAYER+1), KC_LCTL,  KC_SPC, KC_LALT, _______, _______, _______, _______
+         KC_ESC, _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, _______,
+    //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+         KC_TAB, _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, _______,
+    //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+        KC_LSFT, _______, _______, _______, _______, _______, TO(0),      _______, _______, _______, _______, _______, _______, _______,
+    //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
+                     TT(GAME_LAYER+1), KC_LCTL,  KC_SPC, KC_LALT,            _______, _______, _______, _______
     //`--------------------------'  `--------------------------'
     ),
 // Game Layer 2
@@ -186,7 +187,20 @@ bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *reme
         case LT(SYM_LAYER, QK_LEAD):
             return false;
     }
+    // Don't record encoder turns or presses
+    if (record->event.type == ENCODER_CW_EVENT ||
+            record->event.type == ENCODER_CCW_EVENT ||
+            (record->event.key.row == 3 && record->event.key.col == 5) ||
+            (record->event.key.row == 7 && record->event.key.col == 0) ) return false;
     return true;
+}
+
+uint16_t get_alt_repeat_key_keycode_user(uint16_t keycode, uint8_t mods) {
+    if (!mods) switch (keycode) {
+        case KC_F: return KC_D; // CVAT Forwards to backwards
+        case KC_D: return KC_F; // CVAT Backwards to forwards
+    }
+    return KC_TRNS; // Deler to default definitions
 }
 
 void leader_end_user(void) {
@@ -255,6 +269,17 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
 #ifdef PERMISSIVE_HOLD_PER_KEY
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     return IS_BILATERAL(record, next_record);
+}
+#endif
+
+#ifdef QUICK_TAP_TERM_PER_KEY
+uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(MEDIA_LAYER, KC_ENT):
+            return 0;
+        default:
+            return QUICK_TAP_TERM;
+    }
 }
 #endif
 

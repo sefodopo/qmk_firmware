@@ -29,33 +29,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SYM_LAYER 6
 #define MEDIA_LAYER 7
 
-extern uint8_t leader_sequence_size;
-extern uint16_t leader_sequence[5];
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [COLEMAK_LAYER] = LAYOUT_split_3x6_5(
 //,,-------------------------------------------------------------.                    ,-----------------------------------------------------.
-    LT(STICKY_LAYER, KC_ESC), KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS,
+    LT(STICKY_LAYER, KC_ESC), KC_Q, KC_W, KC_F, KC_P, KC_B,                                 KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-    LT(MEDIA_LAYER, KC_TAB), KC_A, KC_R, KC_S, KC_T, KC_G, KC_M, KC_N, KC_E, KC_I, KC_O, KC_QUOT,
+    LT(MEDIA_LAYER, KC_TAB), KC_A, KC_R, ALT_T(KC_S), CTL_T(KC_T), KC_G,                                KC_M, CTL_T(KC_N), ALT_T(KC_E), KC_I, KC_O, KC_QUOT,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-    KC_LGUI, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_MUTE, KC_MPLY, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, KC_DEL,
+    KC_LGUI, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_MUTE,                               KC_MPLY, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, KC_DEL,
     //|--------+--------+--------+------------+------------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
 
-    KC_BSPC, LT(NUM_LAYER, QK_AREP), SFT_T(QK_REP), LT(SYM_LAYER, QK_LEAD), LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
+    KC_BSPC, LT(NUM_LAYER, QK_AREP), SFT_T(QK_REP), MO(SYM_LAYER), LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
     //`--------------------------'  `--------------------------'
     ),
 
 [GALLIUM_LAYER] = LAYOUT_split_3x6_5(
     //,-------------------------------------------------------------.                    ,-----------------------------------------------------.
-    LT(STICKY_LAYER, KC_ESC), KC_B, KC_L, KC_D, KC_C, KC_V, KC_J, KC_F, KC_O, KC_U, KC_SCLN, KC_BSLS,
+    LT(STICKY_LAYER, KC_ESC), KC_B, KC_L, KC_D, KC_C, KC_V,                              KC_J, KC_F, KC_O, KC_U, KC_SCLN, KC_BSLS,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-    LT(MEDIA_LAYER, KC_TAB), KC_N, KC_R, KC_T, KC_S, KC_G, KC_Y, KC_H, KC_A, KC_E, KC_I, KC_QUOT,
+    LT(MEDIA_LAYER, KC_TAB), KC_N, KC_R, ALT_T(KC_T), CTL_T(KC_S), KC_G,                              KC_Y, CTL_T(KC_H), ALT_T(KC_A), KC_E, KC_I, KC_QUOT,
     //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
-    KC_LGUI, KC_X, KC_Q, KC_M, KC_W, KC_Z, KC_MUTE, KC_MPLY, KC_K, KC_P, KC_COMM, KC_DOT, KC_SLSH, KC_DEL,
+    KC_LGUI, KC_X, KC_Q, KC_M, KC_W, KC_Z, KC_MUTE,                         KC_MPLY, KC_K, KC_P, KC_COMM, KC_DOT, KC_SLSH, KC_DEL,
     //|--------+--------+--------+------------+------------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
 
-    KC_BSPC, LT(NUM_LAYER, QK_AREP), SFT_T(QK_REP), LT(SYM_LAYER, QK_LEAD), LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
+    KC_BSPC, LT(NUM_LAYER, QK_AREP), SFT_T(QK_REP), MO(SYM_LAYER),                  LT(MEDIA_LAYER, KC_ENT), KC_SPC, KC_BSPC, KC_BSPC
     //`--------------------------'  `--------------------------'
     ),
 
@@ -75,13 +72,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Num Layer
 [NUM_LAYER] = LAYOUT_split_3x6_5(
     //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-    _______, _______, _______, _______, _______, _______, KC_SLSH, KC_7, KC_8, KC_9, KC_MINS, KC_CALC,
+        _______, _______, _______, _______, _______, _______,                      KC_SLSH,    KC_7,    KC_8,    KC_9, KC_MINS, KC_CALC,
     //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-    _______, _______, C(KC_X), C(KC_C), C(KC_V), _______, KC_ASTR, KC_4, KC_5, KC_6, KC_PLUS, _______,
+        _______, _______, C(KC_X), C(KC_C), C(KC_V), _______,                      KC_ASTR,    KC_4,    KC_5,    KC_6, KC_PLUS, _______,
     //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_0, KC_1, KC_2, KC_3, KC_DOT, _______,
+        _______, _______, _______, _______, _______, _______, _______,    _______,    KC_0,    KC_1,    KC_2,    KC_3,  KC_DOT, _______,
     //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-    _______, _______, _______, _______, _______, _______, _______, _______
+                                   _______, _______, _______, _______,   _______, _______, _______, _______
     //`--------------------------'  `--------------------------'
     ),
 
@@ -114,13 +111,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Game Layer
 [GAME_LAYER] = LAYOUT_split_3x6_5(
     //,-------------------------------------------------------------.                    ,-----------------------------------------------------.
-         KC_ESC, _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, _______,
-    //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-         KC_TAB, _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, _______,
-    //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-        KC_LSFT, _______, _______, _______, _______, _______, TO(0),      _______, _______, _______, _______, _______, _______, _______,
-    //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                     TT(GAME_LAYER+1), KC_LCTL,  KC_SPC, KC_LALT,            _______, _______, _______, _______
+         KC_ESC, _______, _______,     _______,     _______, _______,                      _______, _______, _______, _______, _______, _______,
+    //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
+         KC_TAB, _______, _______,        KC_T,        KC_S, _______,                      _______,    KC_H,    KC_A, _______, _______, _______,
+    //|--------+--------+--------+------------+------------+--------|                    |--------+--------+--------+--------+--------+--------|
+        KC_LSFT, _______, _______, _______, _______, _______, TO(0), _______, _______, _______, _______, _______, _______, _______,
+    //|--------+--------+--------+------------+------------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
+TT(GAME_LAYER+1), KC_LCTL,  KC_SPC, KC_LALT, _______, _______, _______, _______
     //`--------------------------'  `--------------------------'
     ),
 // Game Layer 2
@@ -142,18 +139,6 @@ static keyrecord_t next_record;
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (leader_sequence_active() &&
-            record->event.pressed &&
-            (leader_sequence_size > 1 ||
-             (leader_sequence_one_key(KC_S) && keycode != KC_T) ||
-            (leader_sequence_one_key(KC_H) && keycode != KC_A) ||
-            leader_sequence_one_key(KC_T) ||
-            leader_sequence_one_key(KC_A) ||
-            (leader_sequence_size == 0 && keycode != KC_T && keycode != KC_S && keycode != KC_H && keycode != KC_A))) {
-        //uprintf("Ending leader: %d\n", keycode);
-        leader_end();
-        return true;
-    }
     switch(keycode) {
         case LT(NUM_LAYER, QK_AREP):
             if (record->tap.count) {
@@ -161,12 +146,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 if(process_last_key(QK_AREP, record)) {
                     process_repeat_key(QK_AREP, record);
                 }
-                return false;
-            }
-            break;
-        case LT(SYM_LAYER, QK_LEAD):
-            if (record->tap.count && record->event.pressed) {
-                leader_start();
                 return false;
             }
             break;
@@ -184,7 +163,6 @@ bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *reme
     switch (keycode) {
         case LT(NUM_LAYER, QK_AREP):
         case SFT_T(QK_REP):
-        case LT(SYM_LAYER, QK_LEAD):
             return false;
     }
     // Don't record encoder turns or presses
@@ -201,36 +179,6 @@ uint16_t get_alt_repeat_key_keycode_user(uint16_t keycode, uint8_t mods) {
         case KC_D: return KC_F; // CVAT Backwards to forwards
     }
     return KC_TRNS; // Deler to default definitions
-}
-
-void leader_end_user(void) {
-    switch (leader_sequence[0]) {
-        case KC_T:
-        case KC_A:
-            set_oneshot_mods(MOD_BIT(KC_LALT));
-            set_last_mods(MOD_BIT(KC_LALT));
-            break;
-        case KC_S:
-        case KC_H:
-            switch (leader_sequence[1]) {
-                case KC_T:
-                case KC_A:
-                    set_oneshot_mods(MOD_BIT(KC_LALT) | MOD_BIT(KC_LCTL));
-                    set_last_mods(MOD_BIT(KC_LALT) | MOD_BIT(KC_LCTL));
-                    break;
-                default:
-                    set_oneshot_mods(MOD_BIT(KC_LCTL));
-                    set_last_mods(MOD_BIT(KC_LCTL));
-            }
-            break;
-    }
-//    if (leader_sequence_one_key(KC_S) || leader_sequence_one_key(KC_H)) {
-//        set_oneshot_mods(MOD_BIT(KC_LCTL));
-//    } else if (leader_sequence_one_key(KC_T) || leader_sequence_one_key(KC_A)) {
-//        set_oneshot_mods(MOD_BIT(KC_LALT));
-//    } else if (leader_sequence_two_keys(KC_S, KC_T) || leader_sequence_two_keys(KC_H, KC_A)) {
-//        set_oneshot_mods(MOD_BIT(KC_LCTL) | MOD_BIT(KC_LALT));
-//    }
 }
 
 // BELOW IS TAKEN FROM https://github.com/filterpaper/qmk_userspace?tab=readme-ov-file#instant-tap
@@ -288,29 +236,28 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
 #define IS_TYPING(kc) (last_input_activity_elapsed() < INPUT_INTERVAL && KC_A <= (uint8_t)kc && (uint8_t)kc <= KC_SLSH && !IS_QK_LAYER_TAP(kc))
 
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
-    //static uint16_t prev_keycode;
+    static uint16_t prev_keycode;
     //static keyrecord_t prev_record;
-    //static bool     is_pressed[UINT8_MAX];
+    static bool     is_pressed[UINT8_MAX];
 
     if (record->event.pressed) {
-        //prev_keycode = next_keycode;
+        prev_keycode = next_keycode;
         //prev_record = next_record;
 
         next_keycode = keycode;
         next_record  = *record;
     }
 
-
-    // if (IS_HOMEROW(record) && IS_QK_MOD_TAP(keycode)) {
-    //     uint8_t const tap_keycode = QK_MOD_TAP_GET_TAP_KEYCODE(keycode);
-    //     if (record->event.pressed && IS_TYPING(prev_keycode)) {
-    //         record->keycode         = tap_keycode;
-    //         is_pressed[tap_keycode] = true;
-    //     } else if (!record->event.pressed && is_pressed[tap_keycode]) {
-    //         record->keycode         = tap_keycode;
-    //         is_pressed[tap_keycode] = false;
-    //     }
-    // }
+    if (IS_HOMEROW(record) && IS_QK_MOD_TAP(keycode)) {
+        uint8_t const tap_keycode = QK_MOD_TAP_GET_TAP_KEYCODE(keycode);
+        if (record->event.pressed && IS_TYPING(prev_keycode)) {
+            record->keycode         = tap_keycode;
+            is_pressed[tap_keycode] = true;
+        } else if (!record->event.pressed && is_pressed[tap_keycode]) {
+            record->keycode         = tap_keycode;
+            is_pressed[tap_keycode] = false;
+        }
+    }
     return true;
 }
 

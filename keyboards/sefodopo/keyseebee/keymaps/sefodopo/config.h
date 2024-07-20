@@ -37,4 +37,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPLIT_WPM_ENABLE
 
 // #define LEADER_NO_TIMEOUT
-#define LEADER_TIMEOUT 1000
+// #define LEADER_TIMEOUT 1000
